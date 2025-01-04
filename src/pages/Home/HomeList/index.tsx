@@ -1,6 +1,7 @@
 import {Image, List, InfiniteScroll } from "antd-mobile";
 import {useState, useEffect} from "react";
 import {fetchListAPI, ListRes} from "@/apis/home.ts";
+import {useNavigate} from "react-router-dom";
 
 type Props = {
     channelId: string;
@@ -39,23 +40,31 @@ const HomeList = (props: Props) => {
             })
 
             if (response.data.data.results.length === 0 ){
-                setHasMore(true)
+                setHasMore(false)
             }
             setListRes({
                 results: [ ... listRes.results, ...response.data.data.results],
                 pre_timestamp: listRes.pre_timestamp,
             })
+
         } catch (e) {
             throw new Error('fetchListAPI error' + e)
         }
+
+    }
+
+    const navigate = useNavigate()
+    const goToDetail = (id: string) => {
+        navigate(`/detail?id=${id}`)
     }
     return (
         <>
             <List>
 
                 {listRes.results.map((item)=> (
-                    <List.Item
+                    <List.Item onClick={()=> goToDetail(item.art_id)}
                     key={item.art_id}
+                    arrow={false}
                     prefix={
                             <Image
                             src={item.cover.images?.[0]}
